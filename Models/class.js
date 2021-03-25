@@ -3,22 +3,22 @@ var Schema = mongoose.Schema;
 //const lesson = require("../Models/lesson");
 
 var classSchema = new Schema({
-Name: {
-	Type: String,
+name: {
+	type: String,
 	required: Boolean,
 	unique: Boolean
 },
-Lesson: {
-	Type: String,
+lesson: {
+	type: String,
 	required: Boolean,
 	unique: Boolean
 },
-Class_code: {
-	Type: String,
+class_code: {
+	type: String,
 	required: Boolean,
 	unique: Boolean
 }
 
 });
-var classSchema = mongoose.model("Class", classSchema);
+var classSchema = mongoose.model("classes", classSchema);
 module.exports = classSchema;
