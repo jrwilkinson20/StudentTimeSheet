@@ -1,11 +1,12 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-//const DaysEnum = {"monday":1}
 var recordSchema = new Schema ({
 	type: {
 		type: String,
 		required: Boolean,
-		unique: Boolean
+		unique: Boolean,
+		enum: ['Homework', 'Exam Prep', 'Studying'],
+		default: 'Homework'
 	},
 	minutes: {
 		type: Number,

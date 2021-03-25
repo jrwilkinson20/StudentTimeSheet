@@ -1,5 +1,6 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
+const record = require("../Models/record");
 
 var lessonSchema = new Schema({
 	name: {
@@ -9,7 +10,7 @@ var lessonSchema = new Schema({
 },
 
 record: {
-	type: String,
+	type: [{type: Schema.ObjectId, ref: 'records'}],
 	required: Boolean,
 	unique: Boolean
 },

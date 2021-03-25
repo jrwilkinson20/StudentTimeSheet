@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-//const lesson = require("../Models/lesson");
+const lesson = require("../Models/lesson");
 
 var classSchema = new Schema({
 name: {
@@ -9,7 +9,7 @@ name: {
 	unique: Boolean
 },
 lesson: {
-	type: String,
+	type: [{type: Schema.ObjectId, ref: 'lessons'}],
 	required: Boolean,
 	unique: Boolean
 },

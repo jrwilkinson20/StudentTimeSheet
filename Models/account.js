@@ -1,6 +1,5 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-const DaysEnum = {"monday":1}
 const classes = require("../Models/class");
 
  var accountSchema = new Schema({
@@ -22,10 +21,12 @@ const classes = require("../Models/class");
 	account_type: {
 		type: String,
 		required: Boolean,
-		unique: Boolean
+		unique: Boolean,
+		enum: ['Professor', 'Student'], 
+		default: 'Student'
 	},
 	class: {
-		type: String,
+		type: [{type: Schema.ObjectId, ref: 'classes'}],
 		required: Boolean,
 		unique: Boolean
 	}
