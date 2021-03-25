@@ -4,20 +4,20 @@ var Schema = mongoose.Schema;
 var lessonSchema = new Schema({
 	Name: {
 		Type: String,
-		//Required: true,
-		Unique: false
+		required: Boolean,
+		unique: Boolean
 },
 
 Record: {
 	Type: String,
-	//Required: true,
-	Unique: false
+	required: Boolean,
+	unique: Boolean
 },
 
 Due_date: {
 	Type: Date,
-	//Required: true,
-	Unique: false
+	required: Boolean,
+	unique: Boolean
 }
 });
 var lessonSchema = mongoose.model("Lesson", lessonSchema);

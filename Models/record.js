@@ -4,13 +4,13 @@ var Schema = mongoose.Schema;
 var Record = new Schema ({
 	Type: {
 		Type: String,
-		//Required: true,
-		Unique: false
+		required: Boolean,
+		unique: Boolean
 	},
 	Minutes: {
 		Type: String,
-		//Required: true,
-		Unique: false
+		required: Boolean,
+		unique: Boolean
 	}
 });
 var recordSchema = mongoose.model("Record", recordSchema);

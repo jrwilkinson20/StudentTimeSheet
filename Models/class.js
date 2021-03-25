@@ -5,18 +5,18 @@ var Schema = mongoose.Schema;
 var classSchema = new Schema({
 Name: {
 	Type: String,
-	//required: true,
-	Unique: false
+	required: Boolean,
+	unique: Boolean
 },
 Lesson: {
 	Type: String,
-	//required: true,
-	Unique: false
+	required: Boolean,
+	unique: Boolean
 },
 Class_code: {
 	Type: String,
-	//required: true,
-	Unique: true
+	required: Boolean,
+	unique: Boolean
 }
 
 });

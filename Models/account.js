@@ -4,31 +4,31 @@ const DaysEnum = {"monday":1}
 const classes = require("../Models/class");
 
  var accountSchema = new Schema({
-	Username: {
-		Type: String,
-		//required: true,
-		Unique: true
+	username: {
+		type: String,
+		required: Boolean,
+		unique: Boolean
 	},
-	Email: {
-		Type: String,
-		//required: true,
-		Unique: true
+	email: {
+		type: String,
+		required: Boolean,
+		unique: Boolean
 	},
 	password: {
-		Type: String,
-		//required: true,
-		Unique: false
+		type: String,
+		required: Boolean,
+		unique: Boolean
 	},
-	Account_type: {
-		Type: String,
-		//required: true,
-		Unique: false
+	account_type: {
+		type: String,
+		required: Boolean,
+		unique: Boolean
 	},
-	Class: {
-		Type: String,
-		//required: true,
-		Unique: false
+	class: {
+		type: String,
+		required: Boolean,
+		unique: Boolean
 	}
 });
-var accountSchema = mongoose.model("Account", accountSchema);
+var accountSchema = mongoose.model("accounts", accountSchema);
 module.exports = accountSchema;
