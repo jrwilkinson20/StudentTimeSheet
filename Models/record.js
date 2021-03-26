@@ -1,3 +1,4 @@
+//Timothy Carta, Victoria Gorski, Julia Wilkinson
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var recordSchema = new Schema ({
