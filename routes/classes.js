@@ -1,12 +1,21 @@
 var express = require("express");
 var classRouter = express.Router();
 let classes = require("../Models/class");
+const mongoose = require("mongoose");
 
 classRouter
-  .route("/")
+  .route("/account/:id/classes/")
   .all((req, res, next) => {
     next();
   })
+  .get((req, res, next) => {
+    classes.find({}, (err, classes) => {
+      if (err) throw err;
+      res.json(classes);
+    });
+    res.end();
+  });
+  classRouter.route("/account/:id/classes/:class/")
   .get((req, res, next) => {
     classes.find({}, (err, classes) => {
       if (err) throw err;
@@ -22,5 +31,6 @@ classRouter
     });
     res.end();
   });
+  
 
 module.exports = classRouter;

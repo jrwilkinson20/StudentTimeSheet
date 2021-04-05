@@ -1,8 +1,9 @@
 var express = require("express");
 var recordRouter = express.Router();
 let record = require("../Models/record");
+const mongoose = require("mongoose");
  recordRouter
-  .route("/")
+  .route("/account/:id/classes/:class/lessons/:lesson/records/")
   .all((req, res, next) => {
     next();
   })
@@ -21,5 +22,12 @@ let record = require("../Models/record");
     });
     res.end();
   });
+recordRouter.route("/account/:id/classes/:classId/lessons/:lesson/records/:recordId")
+.put((req,res,next) => {
+  record.findByIdAndUpdate(req.params.recordId, {$set: req.body}, {new: true}, (err, record) => {
+    if (err) throw err;
+    res.json(record);
+  });
+});
 
 module.exports = recordRouter;
