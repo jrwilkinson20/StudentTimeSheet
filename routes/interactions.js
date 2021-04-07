@@ -1,25 +1,18 @@
 var express = require('express');
 var interactionsRouter = express.Router();
 let accounts = require('../Models/account');
-let classes = require('../Models/class');
-let lessons = require('../Models/lesson');
-let records = require('../Models/record');
 const mongoose = require('mongoose');
 
 // /accounts
 // Accounts
 interactionsRouter
 	.route('/')
-	.all((req, res, next) => {
-		next();
-	})
 	//Get all accounts
 	.get((req, res, next) => {
 		accounts.find({}, (err, account) => {
 			if (err) throw err;
 			res.json(account);
 		});
-		res.end();
 	})
 	//Insert account
 	.post((req, res, next) => {
@@ -30,7 +23,7 @@ interactionsRouter
 		res.end();
 	});
 
-//AccountId
+//AccountId parameter
 // /accounts/ACCOUNTID
 interactionsRouter
 	.route('/:accountId')
@@ -45,7 +38,6 @@ interactionsRouter
 				res.json(account);
 			}
 		);
-		res.end();
 	});
 
 // /accounts/ACCOUNTID/classes/
@@ -58,7 +50,18 @@ interactionsRouter
 			if (err) throw err;
 			res.json(account.class);
 		});
-		res.end();
+	})
+	//Create a new class
+	.post((req, res, next) => {
+		accounts.findById(req.params.accountId, (err, account) => {
+			if (err) throw err;
+			account.class.push(req.body);
+			account.save((err, account) => {
+				if (err) throw err;
+				res.json(account);
+			});
+			console.log('Class Created');
+		});
 	});
 
 //Class Ids
@@ -71,20 +74,30 @@ interactionsRouter
 			if (err) throw err;
 			res.json(account.class.id(req.params.classId));
 		});
-		res.end();
-	})
-	//Create a new class with id ClassId
-	.post((req, res, next) => {
-		classes.create(req.body, (err, classes) => {
+	});
+
+// /accounts/ACCOUNTID/classes/CLASSID/lessons
+// Lessons for a given account id
+interactionsRouter
+	.route('/:accountId/classes/:classId/lessons')
+	//Get all Lessons for given account id
+	.get((req, res, next) => {
+		accounts.findById(req.params.accountId, (err, account) => {
 			if (err) throw err;
-			accounts.class.push(req.body);
-			accounts.save((err, account) => {
+			res.json(account.class.id(req.params.classId).lesson);
+		});
+	})
+	//Create a new Lesson
+	.post((req, res, next) => {
+		accounts.findById(req.params.accountId, (err, account) => {
+			if (err) throw err;
+			account.class.id(req.params.classId).lesson.push(req.body);
+			account.save((err, account) => {
 				if (err) throw err;
 				res.json(account);
 			});
-			console.log('Class Created');
+			console.log('Lesson Created');
 		});
-		res.end();
 	});
 
 // account/ACCOUNTID/classes/CLASSID/lessons/LESSONID/
@@ -92,104 +105,102 @@ interactionsRouter
 	.route('/:accountId/classes/:classId/lessons/:lessonId')
 	.get((req, res, next) => {
 		accounts.findById(req.params.accountId, (err, account) => {
-			if (err) throw err;
-			account.findById(req.params.classId, (err, clas) => {
-				if (err) throw err;
-				clas.findById(req.params.lessonId),
-					(err, lesson) => {
-						if (err) throw err;
-						res.json(
-							account.clas.lesson.id(req.params.lessonId)
-						);
-					};
-			});
+			res.json(
+				account.class
+					.id(req.params.classId)
+					.lesson.id(req.params.lessonId)
+			);
 		});
-		res.end();
 	})
 	.post((req, res, next) => {
-		lesson.create(req.body, (err, lesson) => {
+		accounts.findById(req.params.accountId, (err, account) => {
 			if (err) throw err;
-
-			console.log('lesson Created');
+			account.class.id(req.params.classId).lesson.push(req.body);
+			account.save((err, account) => {
+				if (err) throw err;
+				res.json(account);
+			});
+			console.log('Lesson Created');
 		});
-		res.end();
 	})
 	.put((req, res, next) => {
 		accounts.findById(req.params.accountId, (err, account) => {
 			if (err) throw err;
-			account.findById(req.params.classId, (err, clas) => {
+			account.class
+				.id(req.params.classId)
+				.lesson.id(req.params.lessonId)
+				.remove(); //remove the lesson
+			account.class.id(req.params.classId).lesson.push(req.body); //add the updated lesson
+			//save the account
+			account.save((err, account) => {
 				if (err) throw err;
-				clas.findById(req.params.lessonId),
-					(err, lesson) => {
-						if (err) throw err;
-						lesson.findByIdAndUpdate(
-							req.params.lessonId,
-							{ $set: req.body },
-							{ new: true },
-							(err, lesson) => {
-								if (err) throw err;
-								res.json(lesson);
-							}
-						);
-					};
+				res.json(account);
 			});
+			console.log('Lesson updated');
 		});
-		res.end();
 	});
 
 // accounts/ACCOUNTID/classes/CLASSID/lessons/LESSONID/records
 interactionsRouter
-	.route('/:accountId/classes/:classId/lessons/:lessonId/records/')
-	.all((req, res, next) => {
-		next();
-	})
+	.route('/classes/:classId/lessonsrecords/') //prof 
 	.get((req, res, next) => {
 		accounts.findById(req.params.accountId, (err, account) => {
 			if (err) throw err;
-			account.findById(req.params.classId, (err, clas) => {
-				if (err) throw err;
-				clas.findById(req.params.lessonId),
-					(err, lesson) => {
-						if (err) throw err;
-						res.json(account.clas.lesson.record);
-					};
-			});
+			res.json(
+				account.class
+					.id(req.params.classId)
+					.lesson.id(req.params.lessonId).record
+			);
 		});
-		res.end();
 	})
 	.post((req, res, next) => {
-		record.create(req.body, (err, record) => {
+		accounts.findById(req.params.accountId, (err, account) => {
 			if (err) throw err;
-
+			account.class
+				.id(req.params.classId)
+				.lesson.id(req.params.lessonId)
+				.record.push(req.body);
+			account.save((err, account) => {
+				if (err) throw err;
+				res.json(account);
+			});
 			console.log('Record Created');
 		});
-		res.end();
 	});
 
 // /accounts/ACCOUNTID/classes/CLASSID/lessons/LESSONID/records/RECORDID
 interactionsRouter
-	.route('/:id/classes/:classId/lessons/:lesson/records/:recordId')
+	.route('/:id/classes/:classId/lessonsrecords/')
+	.get((req, res, next) => {
+		accounts.findById(req.params.accountId, (err, account) => {
+			if (err) throw err;
+			res.json(
+				account.class
+					.id(req.params.classId)
+					.lesson.id(req.params.lessonId)
+					.record.id(req.params.recordId)
+			);
+		});
+	})
 	.put((req, res, next) => {
 		accounts.findById(req.params.accountId, (err, account) => {
 			if (err) throw err;
-			account.findById(req.params.classId, (err, clas) => {
+			account.class
+				.id(req.params.classId)
+				.lesson.id(req.params.lessonId)
+				.record.id(req.params.recordId)
+				.remove(); //remove the record
+			account.class
+				.id(req.params.classId)
+				.lesson.id(req.params.lessonId)
+				.record.push(req.body); //add the updated record
+			//save the account
+			account.save((err, account) => {
 				if (err) throw err;
-				clas.findById(req.params.lessonId),
-					(err, lesson) => {
-						if (err) throw err;
-						record.findByIdAndUpdate(
-							req.params.recordId,
-							{ $set: req.body },
-							{ new: true },
-							(err, record) => {
-								if (err) throw err;
-								res.json(record);
-							}
-						);
-					};
+				res.json(account);
 			});
+			console.log('Lesson updated');
 		});
-		res.end();
 	});
 
 module.exports = interactionsRouter;
