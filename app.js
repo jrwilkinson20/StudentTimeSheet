@@ -3,11 +3,12 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var config = require('./config');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var accountsRouter = require('./routes/accounts');
-var indexRouter = require('./routes/accounts');
+var studentRouter = require('./routes/student');
+var professorRouter = require('./routes/professor');
 
 var mongoose = require('mongoose');
 const connectionParams = {
@@ -15,9 +16,8 @@ const connectionParams = {
 	useCreateIndex: true,
 	useUnifiedTopology: true,
 };
-var uri =
-	'mongodb+srv://dbuser:158skunkJR21!@cluster0.c0anp.mongodb.net/StudentSheet?retryWrites=true&w=majority';
-
+//var uri = 'mongodb+srv://dbuser:158skunkJR21!@cluster0.c0anp.mongodb.net/StudentSheet?retryWrites=true&w=majority';
+var uri = `mongodb+srv://${config.database.username}:${config.database.password}@${config.database.host}`;
 mongoose
 	.connect(uri, connectionParams)
 	.then(() => {
@@ -45,9 +45,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/accounts', accountsRouter);
+app.use('/student', studentRouter);
+app.use('/professor', professorRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

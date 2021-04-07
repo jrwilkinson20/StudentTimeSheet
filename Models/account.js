@@ -1,36 +1,35 @@
 //Timothy Carta, Victoria Gorski, Julia Wilkinson
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-const classes = require("../Models/class");
 
- var accountSchema = new Schema({
+var accountSchema = new Schema({
 	username: {
 		type: String,
-		required: Boolean,
-		unique: Boolean
+		required: true,
+		unique: true,
 	},
 	email: {
 		type: String,
-		required: Boolean,
-		unique: Boolean
+		required: true,
+		unique: true,
 	},
 	password: {
 		type: String,
-		required: Boolean,
-		unique: Boolean
+		required: true,
+		unique: true,
 	},
 	account_type: {
 		type: String,
-		required: Boolean,
-		unique: Boolean,
-		enum: ['Professor', 'Student'], 
-		default: 'Student'
+		required: true,
+		unique: true,
+		enum: ['PROFESSOR', 'STUDENT'],
+		default: 'STUDENT',
 	},
 	class: {
-		type: [{type: Schema.ObjectId, ref: 'classes'}],
-		required: Boolean,
-		unique: Boolean
-	}
+		type: [{ type: Schema.ObjectId, ref: 'classes' }],
+		required: true,
+		unique: true,
+	},
 });
-var accountSchema = mongoose.model("accounts", accountSchema);
+var accountSchema = mongoose.model('accounts', accountSchema);
 module.exports = accountSchema;
