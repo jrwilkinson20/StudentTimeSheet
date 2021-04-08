@@ -60,6 +60,7 @@ professorRouter
 				});
 			});
 	})
+	//delete an account with a specific id
 	.delete((req, res, next) => {
 		Account.remove({ _id: req.params.accountId })
 			.exec()
@@ -67,5 +68,89 @@ professorRouter
 				res.status(200).json(result);
 			});
 	});
+professorRouter
+	.route('/:accountId/classes')
+	//get all classes for the professor
+	.get((req, res, next) => {
+		classes.find({}, (err, classes) => {
+			if (err) throw err;
+			res.json(classes);
+		});
+		res.end();
+	});
+professorRouter
+	.route('/:accountId/classes/:classId/')
+	//get a specific class by ID
+	.get((req, res, next) => {
+	classes.find({}, (err, classes) => {
+		if (err) throw err;
+		res.json(classes);
+	});
+	res.end();
+	})
+	//create a new class with an ID
+	.post((req, res, next) => {
+	classes.create(req.body, (err, classes) => {
+		if (err) throw err;
+
+		console.log('Account Created');
+	});
+	res.end();
+	});
+professorRouter
+	.route("/:accountI/classes/:classId/lessons")
+	//get all lessons
+	.get((req, res, next) => {
+	lesson.find({}, (err, lesson) => {
+		if (err) throw err;
+		res.json(lesson);
+	});
+	res.end();
+	})
+professorRouter
+	.route("/:accountI/classes/:classId/lessons/:lessonId/")
+	//get a specific lesson
+	.get((req, res, next) => {
+		lesson.find({}, (err, lesson) => {
+			if (err) throw err;
+			res.json(lesson);
+		});
+		res.end();
+		})
+	//post a new lesson
+	.post((req, res, next) => {
+		lesson.create(req.body, (err, lesson) => {
+			if (err) throw err;
+			console.log("lesson Created");
+		});
+		res.end();
+		})
+		//update a lesson
+	.put((req,res,next) => {
+		lesson.findByIdAndUpdate(req.params.lessonId, {$set: req.body}, {new: true}, (err, lesson) => {
+			if (err) throw err;
+			res.json(lesson);
+		});
+		});
+professorRouter
+		.route("/:accountI/classes/:classId/lessons/:lessonId/records")
+		//get all records
+		.get((req, res, next) => {
+	   record.find({}, (err, record) => {
+			if (err) throw err;
+			res.json (record);
+		  });
+		  res.end();
+		})
+professorRouter
+		.route("/:accountI/classes/:classId/lessons/:lessonId/records/:recordId/")
+		//update a record
+	  	.put((req,res,next) => {
+		record.findByIdAndUpdate(req.params.recordId, {$set: req.body}, {new: true}, (err, record) => {
+		  if (err) throw err;
+		  res.json(record);
+		});
+	  });
+	  
 
 module.exports = professorRouter;

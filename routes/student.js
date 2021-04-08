@@ -93,35 +93,83 @@ studentRouter
 studentRouter
 	.route('/:accountId/classes/')
 	//Get all classes
-	.get();
-
+	.get((req, res, next) => {
+		classes.find({}, (err, classes) => {
+			if (err) throw err;
+			res.json(classes);
+		});
+		res.end();
+	})
 studentRouter
 	.route('/classes/:classId/')
 	//Get a class with a specific ID
-	.get();
+	.route('/:id/classes/:class/')
+	.get((req, res, next) => {
+		classes.findById(req.params.classId, {$set: req.body}, (err, classes) => {
+			if (err) throw err;
+			res.json(classes);
+		});
+		res.end();
+	})
 
 studentRouter
 	.route('/classes/:classId/lessons/')
 	//Get all lessons
-	.get();
+	.get((req, res, next) => {
+		lesson.find({}, (err, lesson) => {
+		  if (err) throw err;
+		  res.json(lesson);
+		});
+		res.end();
+	  })
 
 studentRouter
 	.route('/classes/:classId/lessons/:lessonId/')
 	//Get a lesson with a specific ID
-	.get();
+	.get((req, res, next) => {
+		lesson.findById(req.params.lessonId, {$set: req.body}, (err, lesson) => {
+		  if (err) throw err;
+		  res.json(lesson);
+		});
+		res.end();
+	  })
 
 studentRouter
 	.route('/classes/:classId/lessons/:lessonId/records')
 	//Get all records
-	.get()
+	.get((req, res, next) => {
+		record.find({}, (err, record) => {
+			 if (err) throw err;
+			 res.json (record);
+		   });
+		   res.end();
+		 })
 	//Post a new record
-	.post();
+	.post((req, res, next) => {
+		record.create(req.body, (err, record) => {
+			 if (err) throw err;
+	   
+			 console.log("Record Created");
+		   });
+		   res.end();
+		 });
 
 studentRouter
 	.route('/classes/:classId/lessons/:lessonId/records/:recordId')
 	//Get a record with a specific ID
-	.get()
+	.get((req, res, next) => {
+		record.findById(req.params.recordId, {$set: req.body}, (err, record) => {
+			 if (err) throw err;
+			 res.json (record);
+		   });
+		   res.end();
+		 })
 	//Update a record with a specific ID
-	.put();
+	.put((req,res,next) => {
+		record.findByIdAndUpdate(req.params.recordId, {$set: req.body}, {new: true}, (err, record) => {
+		  if (err) throw err;
+		  res.json(record);
+		});
+	  });
 
 module.exports = studentRouter;
