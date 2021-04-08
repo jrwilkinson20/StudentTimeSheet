@@ -3,6 +3,7 @@ var professorRouter = express.Router();
 const mongoose = require('mongoose');
 let Account = require('../Models/account');
 let Class = require('../Models/class');
+const lessonSchema = require('../Models/lesson');
 let Lesson = require('../Models/lesson');
 let Record = require('../Models/record');
 
@@ -135,6 +136,48 @@ professorRouter
 		Class.findByIdAndUpdate(req.params.classId, {
 			$push: { lesson: lesson._id },
 		}).exec();
+	});
+
+professorRouter
+	.route('/:accountId/classes/:classId/lessons/:lessonId')
+	.put((req, res, next) => {
+		Lesson.remove({ _id: req.params.lessonId }).exec();
+		const lesson = new Lesson({
+			name: req.body.name,
+			due_date: req.body.due_date,
+			record: req.body.record,
+		});
+		lesson
+			.save()
+			.then((result) => {
+				console.log(result);
+				res.status(201).json({ result });
+			})
+			.catch((err) => {
+				console.log(err);
+				res.status(500).json({ error: err });
+			});
+		Class.findByIdAndUpdate(req.params.classId, {
+			$push: { lesson: lesson._id },
+		}).exec();
+	})
+	//delete an lesson with a specific id
+	.delete((req, res, next) => {
+		Lesson.remove({ _id: req.params.lessonId })
+			.exec()
+			.then((result) => {
+				res.status(200).json(result);
+			});
+	});
+
+professorRouter
+	.route('/:accountId/classes/:classId/lessons/:lessonId/records')
+	//get a specific class by ID
+	.get((req, res, next) => {
+		Lesson.findById(req.params.lessonId, (err, lessons) => {
+			if (err) throw err;
+			res.json(lessons);
+		});
 	});
 
 module.exports = professorRouter;

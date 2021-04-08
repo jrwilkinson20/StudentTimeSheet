@@ -5,8 +5,8 @@ var recordSchema = new Schema({
 	type: {
 		type: String,
 		required: true,
-		enum: ['Homework', 'Exam Prep', 'Studying'],
-		default: 'Homework',
+		enum: ['HOMEWORK', 'EXAM PREP', 'STUDYING'],
+		default: 'HOMEWORK',
 	},
 	minutes: {
 		type: Number,
