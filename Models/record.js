@@ -1,19 +1,17 @@
 //Timothy Carta, Victoria Gorski, Julia Wilkinson
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var recordSchema = new Schema ({
+var recordSchema = new Schema({
 	type: {
 		type: String,
-		required: Boolean,
-		unique: Boolean,
+		required: true,
 		enum: ['Homework', 'Exam Prep', 'Studying'],
-		default: 'Homework'
+		default: 'Homework',
 	},
 	minutes: {
 		type: Number,
-		required: Boolean,
-		unique: Boolean
-	}
+		required: true,
+	},
 });
-var recordSchema = mongoose.model("records", recordSchema);
+var recordSchema = mongoose.model('records', recordSchema);
 module.exports = recordSchema;
