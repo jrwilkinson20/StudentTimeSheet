@@ -3,6 +3,7 @@ var professorRouter = express.Router();
 const mongoose = require('mongoose');
 let Account = require('../Models/account');
 let Class = require('../Models/class');
+const lessonSchema = require('../Models/lesson');
 let Lesson = require('../Models/lesson');
 let Record = require('../Models/record');
 
@@ -25,12 +26,11 @@ professorRouter
 	//Add a new professor account
 	.post((req, res, next) => {
 		const account = new Account({
-			_id: mongoose.Types._ObjectId,
 			username: req.body.username,
 			email: req.body.email,
 			password: req.body.password,
 			account_type: req.body.account_type,
-			class: [Schema.Types.Class],
+			class: req.body.class,
 		});
 		account
 			.save()
@@ -68,89 +68,116 @@ professorRouter
 				res.status(200).json(result);
 			});
 	});
+
 professorRouter
 	.route('/:accountId/classes')
 	//get all classes for the professor
 	.get((req, res, next) => {
-		classes.find({}, (err, classes) => {
+		Class.find({}, (err, classes) => {
 			if (err) throw err;
 			res.json(classes);
+		}).populate('lesson');
+	})
+	.post((req, res, next) => {
+		const clas = new Class({
+			name: req.body.name,
+			class_code: req.body.class_code,
+			lesson: req.body.lesson,
 		});
-		res.end();
+		clas.save()
+			.then((result) => {
+				console.log(result);
+				res.status(201).json({ result });
+			})
+			.catch((err) => {
+				console.log(err);
+				res.status(500).json({ error: err });
+			});
+		Account.findByIdAndUpdate(req.params.accountId, {
+			$push: { class: clas._id },
+		}).exec();
 	});
+
 professorRouter
 	.route('/:accountId/classes/:classId/')
 	//get a specific class by ID
 	.get((req, res, next) => {
-	classes.find({}, (err, classes) => {
-		if (err) throw err;
-		res.json(classes);
+		Class.findById(req.params.classId, (err, classes) => {
+			if (err) throw err;
+			res.json(classes);
+		}).populate('lesson');
 	});
-	res.end();
-	})
-	//create a new class with an ID
-	.post((req, res, next) => {
-	classes.create(req.body, (err, classes) => {
-		if (err) throw err;
 
-		console.log('Account Created');
-	});
-	res.end();
-	});
 professorRouter
-	.route("/:accountI/classes/:classId/lessons")
-	//get all lessons
+	.route('/:accountId/classes/:classId/lessons')
+	//get all lessons for the given class
 	.get((req, res, next) => {
-	lesson.find({}, (err, lesson) => {
-		if (err) throw err;
-		res.json(lesson);
-	});
-	res.end();
+		Class.findById(req.params.classId, (err, clas) => {
+			if (err) throw err;
+			res.json(clas.lesson);
+		}).populate('lesson');
 	})
-professorRouter
-	.route("/:accountI/classes/:classId/lessons/:lessonId/")
-	//get a specific lesson
-	.get((req, res, next) => {
-		lesson.find({}, (err, lesson) => {
-			if (err) throw err;
-			res.json(lesson);
-		});
-		res.end();
-		})
-	//post a new lesson
 	.post((req, res, next) => {
-		lesson.create(req.body, (err, lesson) => {
-			if (err) throw err;
-			console.log("lesson Created");
+		const lesson = new Lesson({
+			name: req.body.name,
+			due_date: req.body.due_date,
+			record: req.body.record,
 		});
-		res.end();
-		})
-		//update a lesson
-	.put((req,res,next) => {
-		lesson.findByIdAndUpdate(req.params.lessonId, {$set: req.body}, {new: true}, (err, lesson) => {
-			if (err) throw err;
-			res.json(lesson);
-		});
-		});
+		lesson
+			.save()
+			.then((result) => {
+				console.log(result);
+				res.status(201).json({ result });
+			})
+			.catch((err) => {
+				console.log(err);
+				res.status(500).json({ error: err });
+			});
+		Class.findByIdAndUpdate(req.params.classId, {
+			$push: { lesson: lesson._id },
+		}).exec();
+	});
+
 professorRouter
-		.route("/:accountI/classes/:classId/lessons/:lessonId/records")
-		//get all records
-		.get((req, res, next) => {
-	   record.find({}, (err, record) => {
-			if (err) throw err;
-			res.json (record);
-		  });
-		  res.end();
-		})
-professorRouter
-		.route("/:accountI/classes/:classId/lessons/:lessonId/records/:recordId/")
-		//update a record
-	  	.put((req,res,next) => {
-		record.findByIdAndUpdate(req.params.recordId, {$set: req.body}, {new: true}, (err, record) => {
-		  if (err) throw err;
-		  res.json(record);
+	.route('/:accountId/classes/:classId/lessons/:lessonId')
+	.put((req, res, next) => {
+		Lesson.remove({ _id: req.params.lessonId }).exec();
+		const lesson = new Lesson({
+			name: req.body.name,
+			due_date: req.body.due_date,
+			record: req.body.record,
 		});
-	  });
-	  
+		lesson
+			.save()
+			.then((result) => {
+				console.log(result);
+				res.status(201).json({ result });
+			})
+			.catch((err) => {
+				console.log(err);
+				res.status(500).json({ error: err });
+			});
+		Class.findByIdAndUpdate(req.params.classId, {
+			$push: { lesson: lesson._id },
+		}).exec();
+	})
+	//delete an lesson with a specific id
+	.delete((req, res, next) => {
+		Lesson.remove({ _id: req.params.lessonId })
+			.exec()
+			.then((result) => {
+				res.status(200).json(result);
+			});
+	});
+
+professorRouter
+	.route('/:accountId/classes/:classId/lessons/:lessonId/records')
+	//get a specific class by ID
+	.get((req, res, next) => {
+		Lesson.findById(req.params.lessonId, (err, lessons) => {
+			if (err) throw err;
+			res.json(lessons);
+		});
+	});
 
 module.exports = professorRouter;

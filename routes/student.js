@@ -60,28 +60,7 @@ studentRouter
 				});
 			});
 	})
-	//Update an account with a specific ID
-	.put((req, res, next) => {
-		Account.remove({ _id: req.params.accountId });
-		const account = new Account({
-			_id: req.params.accountId,
-			username: req.body.username,
-			email: req.body.email,
-			password: req.body.password,
-			account_type: req.body.account_type,
-			class: req.body.class,
-		});
-		account
-			.save()
-			.then((result) => {
-				console.log(result);
-				res.status(201).json({ result });
-			})
-			.catch((err) => {
-				console.log(err);
-				res.status(500).json({ error: err });
-			});
-	})
+	//delete an account with a specific id
 	.delete((req, res, next) => {
 		Account.remove({ _id: req.params.accountId })
 			.exec()
@@ -91,85 +70,62 @@ studentRouter
 	});
 
 studentRouter
-	.route('/:accountId/classes/')
-	//Get all classes
+	.route('/:accountId/classes')
+	//get all classes for the professor
 	.get((req, res, next) => {
-		classes.find({}, (err, classes) => {
+		Class.find({}, (err, classes) => {
 			if (err) throw err;
 			res.json(classes);
-		});
-		res.end();
-	})
+		}).populate('lesson');
+	});
+
 studentRouter
-	.route('/classes/:classId/')
-	//Get a class with a specific ID
-	.route('/:id/classes/:class/')
+	.route('/:accountId/classes/:classId/')
+	//get a specific class by ID
 	.get((req, res, next) => {
-		classes.findById(req.params.classId, {$set: req.body}, (err, classes) => {
+		Class.findById(req.params.classId, (err, classes) => {
 			if (err) throw err;
 			res.json(classes);
+		}).populate('lesson');
+	});
+
+studentRouter
+	.route('/:accountId/classes/:classId/lessons')
+	//get all lessons for the given class
+	.get((req, res, next) => {
+		Class.findById(req.params.classId, (err, clas) => {
+			if (err) throw err;
+			res.json(clas.lesson);
+		}).populate('lesson');
+	});
+
+studentRouter
+	.route('/:accountId/classes/:classId/lessons/:lessonId/records')
+	//get all records for the lesson class
+	.get((req, res, next) => {
+		Lesson.findById(req.params.lessonId, (err, lesson) => {
+			if (err) throw err;
+			res.json(lesson.record);
 		});
-		res.end();
 	})
-
-studentRouter
-	.route('/classes/:classId/lessons/')
-	//Get all lessons
-	.get((req, res, next) => {
-		lesson.find({}, (err, lesson) => {
-		  if (err) throw err;
-		  res.json(lesson);
-		});
-		res.end();
-	  })
-
-studentRouter
-	.route('/classes/:classId/lessons/:lessonId/')
-	//Get a lesson with a specific ID
-	.get((req, res, next) => {
-		lesson.findById(req.params.lessonId, {$set: req.body}, (err, lesson) => {
-		  if (err) throw err;
-		  res.json(lesson);
-		});
-		res.end();
-	  })
-
-studentRouter
-	.route('/classes/:classId/lessons/:lessonId/records')
-	//Get all records
-	.get((req, res, next) => {
-		record.find({}, (err, record) => {
-			 if (err) throw err;
-			 res.json (record);
-		   });
-		   res.end();
-		 })
-	//Post a new record
 	.post((req, res, next) => {
-		record.create(req.body, (err, record) => {
-			 if (err) throw err;
-	   
-			 console.log("Record Created");
-		   });
-		   res.end();
-		 });
-
-studentRouter
-	.route('/classes/:classId/lessons/:lessonId/records/:recordId')
-	//Get a record with a specific ID
-	.get((req, res, next) => {
-		record.findById(req.params.recordId, {$set: req.body}, (err, record) => {
-			 if (err) throw err;
-			 res.json (record);
-		   });
-		   res.end();
-		 })
-	//Update a record with a specific ID
-	.put((req,res,next) => {
-		record.findByIdAndUpdate(req.params.recordId, {$set: req.body}, {new: true}, (err, record) => {
-		  if (err) throw err;
-		  res.json(record);
+		const record = new Record({
+			type: req.body.type,
+			minutes: req.body.minutes,
 		});
-	  });
+		record
+			.save()
+			.then((result) => {
+				console.log(result);
+				res.status(201).json({ result });
+			})
+			.catch((err) => {
+				console.log(err);
+				res.status(500).json({ error: err });
+			});
+		Lesson.findByIdAndUpdate(req.params.lessonId, {
+			$push: { record: record._id },
+		}).exec();
+	});
 
 module.exports = studentRouter;
