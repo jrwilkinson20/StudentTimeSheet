@@ -1,4 +1,8 @@
-//Timothy Carta, Victoria Gorski, Julia Wilkinson
+/*
+Authors: Victoria Gorski, Timothy Carta, Julia Wilkinson
+Student Time Sheet Spring 2021
+*/
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 const record = require('../Models/record');

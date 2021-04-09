@@ -1,3 +1,8 @@
+/*
+Authors: Victoria Gorski, Timothy Carta, Julia Wilkinson
+Student Time Sheet Spring 2021
+*/
+
 var express = require('express');
 var professorRouter = express.Router();
 const mongoose = require('mongoose');
@@ -23,7 +28,7 @@ professorRouter
 				});
 			});
 	})
-	//Add a new professor account
+	//post a new professor account
 	.post((req, res, next) => {
 		const account = new Account({
 			username: req.body.username,
@@ -78,6 +83,7 @@ professorRouter
 			res.json(classes);
 		}).populate('lesson');
 	})
+	//post a class for the professor
 	.post((req, res, next) => {
 		const clas = new Class({
 			name: req.body.name,
@@ -117,6 +123,7 @@ professorRouter
 			res.json(clas.lesson);
 		}).populate('lesson');
 	})
+	//post a new lesson
 	.post((req, res, next) => {
 		const lesson = new Lesson({
 			name: req.body.name,
@@ -140,6 +147,7 @@ professorRouter
 
 professorRouter
 	.route('/:accountId/classes/:classId/lessons/:lessonId')
+	//put a lesson by lesson id
 	.put((req, res, next) => {
 		Lesson.remove({ _id: req.params.lessonId }).exec();
 		const lesson = new Lesson({

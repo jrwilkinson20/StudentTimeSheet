@@ -1,3 +1,8 @@
+/*
+Authors: Victoria Gorski, Timothy Carta, Julia Wilkinson
+Student Time Sheet Spring 2021
+*/
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
