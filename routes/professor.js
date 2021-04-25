@@ -174,9 +174,13 @@ professorRouter
 	.route('/:accountId/classes/:classId/lessons/:lessonId/records')
 	//get a specific class by ID
 	.get((req, res, next) => {
-		Lesson.findById(req.params.lessonId, (err, lessons) => {
+		// Lesson.findById(req.params.lessonId, (err, lessons) => {
+		// 	if (err) throw err;
+		// 	res.json(lessons);
+		// });
+		Record.find({}, (err, records) => {
 			if (err) throw err;
-			res.json(lessons);
+			res.json(records);
 		});
 	});
 
